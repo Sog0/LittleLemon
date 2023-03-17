@@ -1,35 +1,50 @@
 package com.example.littlelemon
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.littlelemon.ui.theme.LittleLemonTheme
+import androidx.compose.runtime.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        val  sharedPref by lazy { this.getSharedPreferences("LittleLemon", MODE_PRIVATE) }
+        val editor = sharedPref.edit()
         super.onCreate(savedInstanceState)
         setContent {
-         Onboarding()
+            val navcon = rememberNavController()
+            NavHost(navController = navcon, startDestination = (if(sharedPref.getInt("loginCheck",0)==0) OnBoard.r else Home.r)){
+                composable(Home.r){
+                    Home(sharedPref,navcon)
+                }
+                composable(OnBoard.r)
+                {
+                    Onboarding(editor,navcon)
+                }
+                composable(Profile.r){
+                    Profile(navcon,sharedPref,editor)
+                }}
+
+        }
+
+
+
+
+
+
+
+
         }
     }
-}
+
 
 @Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
+fun MyNav(check: Int, sharedPref: SharedPreferences, editor: SharedPreferences.Editor){
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    LittleLemonTheme {
-        Greeting("Android")
-    }
 }

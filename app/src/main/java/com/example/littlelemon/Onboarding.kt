@@ -1,5 +1,6 @@
 package com.example.littlelemon
 
+import android.content.SharedPreferences
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -7,28 +8,26 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.Center
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.HorizontalAlignmentLine
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.littlelemon.R
+import androidx.navigation.NavHostController
 import com.example.littlelemon.ui.theme.karla
-import com.example.littlelemon.ui.theme.markazi
 
 
 @Composable
-fun Onboarding(){
+fun Onboarding(editor: SharedPreferences.Editor,navcon : NavHostController) {
+    val context = LocalContext.current
+    var openDialog by remember {
+        mutableStateOf(false)
+    }
     var userName by remember {
         mutableStateOf("")
     }
@@ -38,7 +37,6 @@ fun Onboarding(){
     var userEmail by remember {
         mutableStateOf("")
     }
-
 
     Column(Modifier.fillMaxSize()) {
     Row(modifier = Modifier
@@ -138,24 +136,49 @@ fun Onboarding(){
                 singleLine = true
             )
         }
-        Button(onClick = { /*TODO*/ } , modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 14.dp, end = 14.dp, top = 80.dp)
-            .height(50.dp),
+        Button(onClick = { if(userName != "" && userSurname != "" && userEmail != "")
+        {
+            editor.putString("name", userName).apply();
+            editor.putString("surname", userSurname).apply();
+            editor.putString("email", userEmail).apply();
+            editor.putInt("loginCheck",1).apply();
+            navcon.navigate(Home.r)
+        }
+        else{
+         openDialog= true   
+        }}
+            , modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 14.dp, end = 14.dp, top = 80.dp)
+                .height(50.dp),
             colors = ButtonDefaults.buttonColors(Color(0xFFF4CE14)),
             shape = RoundedCornerShape(9.dp) 
         ) { Text(text = "Register" , textAlign = TextAlign.Center, fontSize = 20.sp, fontFamily = karla)}
-
+        if (openDialog){
+            AlertDialog(
+                onDismissRequest = {openDialog=false},
+                title = { Text(text = "Incorrect input")},
+                text = { Text(text = "Please, fill up all fields")},
+                confirmButton = { Button(onClick = { openDialog =false }) {
+                    Text(text = "Confirm")
+                }}
+            )
+        }
         
     }    
     }
 }
 
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
+//@Composable
+//fun Prew(){
+//    Onboarding(editor)
+//}
+
 @Composable
-fun Prew(){
-    Onboarding()
+fun Alert(){
+    Row(Modifier.fillMaxWidth()) {
+        Text(text = "Please, fill up empty boxes!" ,color= Color.Red , fontFamily = karla, fontSize = 15.sp )
+    }
 }
-
-
