@@ -3,6 +3,7 @@ package com.example.littlelemon
 import android.content.SharedPreferences
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -39,17 +40,7 @@ fun Onboarding(editor: SharedPreferences.Editor,navcon : NavHostController) {
     }
 
     Column(Modifier.fillMaxSize()) {
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .height(100.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically ) {
-        Image(
-            painter = painterResource(id = R.drawable.logo),
-            contentDescription = "Logo",
-            Modifier
-                .height(70.dp)
-                .padding(10.dp)
-        )
-    }
+    Header()
     Row(
         Modifier
             .background(color = Color(0xFF495E57))
@@ -170,15 +161,22 @@ fun Onboarding(editor: SharedPreferences.Editor,navcon : NavHostController) {
 }
 
 
-//@Preview(showBackground = true)
-//@Composable
-//fun Prew(){
-//    Onboarding(editor)
-//}
-
 @Composable
-fun Alert(){
-    Row(Modifier.fillMaxWidth()) {
-        Text(text = "Please, fill up empty boxes!" ,color= Color.Red , fontFamily = karla, fontSize = 15.sp )
+fun Header(){
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .height(100.dp)
+        .background(Color(0xFFFFFFFF)),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    )
+    {
+        Image(
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = "Logo",
+            Modifier
+                .height(70.dp)
+                .padding(10.dp)
+        )
     }
 }
