@@ -3,7 +3,6 @@ package com.example.littlelemon
 import android.content.SharedPreferences
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -14,17 +13,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.littlelemon.ui.theme.LittleLemonColor
 import com.example.littlelemon.ui.theme.karla
 
 
 @Composable
-fun Onboarding(editor: SharedPreferences.Editor,navcon : NavHostController) {
+fun Onboarding(editor: SharedPreferences.Editor, navcon: NavHostController) {
     val context = LocalContext.current
     var openDialog by remember {
         mutableStateOf(false)
@@ -81,7 +81,12 @@ fun Onboarding(editor: SharedPreferences.Editor,navcon : NavHostController) {
                     .height(50.dp)
                     .fillMaxWidth()
                     .padding(horizontal = 14.dp),
-                singleLine = true
+                singleLine = true,
+                textStyle= TextStyle(fontSize =17.sp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = LittleLemonColor.yellow,
+                    cursorColor = LittleLemonColor.yellow
+                ),
             )
         }
         Column(
@@ -102,7 +107,12 @@ fun Onboarding(editor: SharedPreferences.Editor,navcon : NavHostController) {
                     .height(50.dp)
                     .fillMaxWidth()
                     .padding(horizontal = 14.dp),
-                singleLine = true
+                singleLine = true,
+                textStyle= TextStyle(fontSize =17.sp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = LittleLemonColor.yellow,
+                    cursorColor = LittleLemonColor.yellow
+                ),
 
             )
         }
@@ -124,7 +134,12 @@ fun Onboarding(editor: SharedPreferences.Editor,navcon : NavHostController) {
                     .height(50.dp)
                     .fillMaxWidth()
                     .padding(horizontal = 14.dp),
-                singleLine = true
+                singleLine = true,
+                textStyle= TextStyle(fontSize =17.sp),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = LittleLemonColor.yellow,
+                    cursorColor = LittleLemonColor.yellow
+                ),
             )
         }
         Button(onClick = { if(userName != "" && userSurname != "" && userEmail != "")
