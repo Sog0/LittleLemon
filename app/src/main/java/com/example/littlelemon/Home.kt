@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -91,7 +92,7 @@ fun Home(
         var selectedCats by remember{ mutableStateOf("")}
 
 
-        LazyRow {
+        LazyRow (horizontalArrangement = Arrangement.spacedBy(20.dp), modifier = Modifier.padding(start = 10.dp)){
             items(categories) { category ->
                 Button(
                     onClick = {
@@ -117,7 +118,7 @@ fun Home(
                         }
                     ),
                     shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.padding(start = 11.dp)
+//                    modifier = Modifier.padding(start = 11.dp)
                 )
                 {
                     Text(
@@ -140,13 +141,13 @@ fun Home(
         menuItems = databaseMenu.filter { menuItem ->
             (selectedCats.isEmpty() || menuItem.category == selectedCats)
                     &&
-                    (menuItem.title.lowercase().contains(input.lowercase()))
+            (menuItem.title.lowercase().contains(input.lowercase()))
         }
 
 
         LazyColumn() {
             items(menuItems) { item ->
-                dishDisplay(item = item)
+                dishDisplay(item = item, navcon)
             }
         }
 
@@ -213,8 +214,8 @@ fun HeroSection(){
 }
 
 @Composable
-fun dishDisplay(item : MenuItem){
-    Card() {
+fun dishDisplay(item : MenuItem, navcon: NavHostController){
+    Card(Modifier.clickable { navcon.navigate(Dish.r + "/${item.id}")}) {
         Card() {
             Row(
                 Modifier

@@ -7,9 +7,11 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import androidx.room.Room
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -41,19 +43,30 @@ class MainActivity : ComponentActivity() {
         setContent {
             val databaseMenu by database.menuItemDao().getAll().observeAsState(emptyList())
             val navcon = rememberNavController()
-            NavHost(navController = navcon, startDestination = (if(sharedPref.getInt("loginCheck",0)==0) OnBoard.r else Home.r)){
-                composable(Home.r){
-                    Home(navcon,databaseMenu)
+            NavHost(navController = navcon, startDestination = (if(sharedPref.getInt("loginCheck",0)==0) OnBoard.r else Home.r)) {
+                composable(Home.r) {
+                    Home(navcon, databaseMenu)
                 }
                 composable(OnBoard.r)
                 {
-                    Onboarding(editor,navcon)
+                    Onboarding(editor, navcon)
                 }
-                composable(Profile.r){
-                    Profile(navcon,sharedPref,editor)
-                }}
-
+                composable(Profile.r) {
+                    Profile(navcon, sharedPref, editor)
+                }
+                composable(
+                    Dish.r + "/{${Dish.dishId}}",
+                    arguments = listOf(navArgument(Dish.dishId) { type = NavType.IntType })
+                ) {
+                    val id = requireNotNull(it.arguments?.getInt(Dish.dishId))
+                    DishDetails(navcon, id, databaseMenu)
+                }
+            }
         }
+
+
+
+
         lifecycleScope.launch(IO){
             if(database.menuItemDao().isEmpty()){
                 val menuItemsNetwork = fetchMenu()

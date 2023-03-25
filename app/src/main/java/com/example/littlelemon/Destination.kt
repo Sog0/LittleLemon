@@ -14,3 +14,8 @@ object OnBoard: Destination{
 object Profile: Destination{
     override var r = "Profile"
 }
+
+object Dish: Destination{
+    override var r = "Dish"
+    const val dishId = "dishId"
+}
