@@ -51,7 +51,7 @@ fun Home(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        HomeHeader(navcon)
+//        HomeHeader(navcon)
         Column(
             Modifier
                 .fillMaxWidth()
@@ -157,28 +157,6 @@ fun Home(
 }
 
 
-@Composable
-fun HomeHeader(navcon: NavHostController){
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .height(70.dp)
-        .background(Color(0xFFFFFFFF)),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.logo),
-            contentDescription = "Logo",
-            Modifier
-                .height(73.dp)
-                .padding(top = 10.dp, bottom = 10.dp, start = 100.dp)
-        )
-        IconButton(onClick = {navcon.navigate(Profile.r)} , Modifier.padding(top= 13.dp, bottom = 10.dp, start = 55.dp) ) {
-            Image(painter = painterResource(id = R.drawable.profile) , contentDescription = "Default profile photo" , Modifier.size(40.dp) )
-        }
-
-    }
-}
 
 @Composable
 fun HeroSection(){

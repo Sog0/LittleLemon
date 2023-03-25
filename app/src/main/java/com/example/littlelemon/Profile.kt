@@ -31,7 +31,7 @@ fun Profile(
     editor: SharedPreferences.Editor
 ) {
     Column {
-    Header()
+        Header()
         Row(
             Modifier
                 .background(color = Color(0xFF495E57))

@@ -36,7 +36,7 @@ fun DishDetails(navcon: NavHostController, id: Int, databaseMenu: List<MenuItem>
 
     Column(Modifier.fillMaxSize()) {
         
-        HomeHeader(navcon = navcon)
+//        HomeHeader(navcon = navcon)
         
         Box(Modifier.fillMaxWidth()){
             GlideImage(
