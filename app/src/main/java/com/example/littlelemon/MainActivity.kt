@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
             val navcon = rememberNavController()
             NavHost(navController = navcon, startDestination = (if(sharedPref.getInt("loginCheck",0)==0) OnBoard.r else Home.r)){
                 composable(Home.r){
-                    Home(sharedPref,navcon,databaseMenu)
+                    Home(navcon,databaseMenu)
                 }
                 composable(OnBoard.r)
                 {

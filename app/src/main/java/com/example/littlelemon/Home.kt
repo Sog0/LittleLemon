@@ -24,6 +24,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -32,24 +33,22 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.example.littlelemon.ui.theme.LittleLemonColor
 import com.example.littlelemon.ui.theme.karla
 import com.example.littlelemon.ui.theme.markazi
+import java.util.*
 
-
-val categ : MutableList<String> = mutableListOf<String>()
-var categCheck = categ
-var Categories = listOf<String>("Starters","Mains","Desserts", "Drinks")
 
 @Composable
 fun Home(
-    sharedPref: SharedPreferences,
     navcon: NavHostController,
     databaseMenu: List<MenuItem>
 ) {
     var input by remember {
         mutableStateOf<String>("")
     }
-    var menuItem by remember {
-        mutableStateOf(databaseMenu)
+
+    var menuItems by remember {
+        mutableStateOf<List<MenuItem>>(emptyList())
     }
+
     Column(modifier = Modifier.fillMaxSize()) {
         HomeHeader(navcon)
         Column(
@@ -80,26 +79,73 @@ fun Home(
             )
         }
         Text(text = "Order for delivery", fontWeight = FontWeight.Bold, color= LittleLemonColor.charcoal , fontFamily = karla, fontSize = 20.sp, modifier = Modifier.padding(top=10.dp, start = 10.dp, bottom = 10.dp))
+
+        var categSet by remember{ mutableStateOf<Set<String>>(emptySet()) }
+
+        var categories = mutableListOf<String>("all")
+
+        categSet = databaseMenu.map{ it.category }.toSet()
+
+        categories.addAll(categSet)
+
+        var selectedCats by remember{ mutableStateOf("")}
+
+
         LazyRow {
-            items(Categories) { category ->
-                filterButton(name = category)
+            items(categories) { category ->
+                Button(
+                    onClick = {
+                        if(category == "all"){
+                            selectedCats = ""
+                        }
+                        else if( category == selectedCats) {
+                            selectedCats = ""
+                        }
+                        else{
+                            selectedCats = category
+                        }
+                              },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = if (category == "all" && selectedCats ==""){
+                            LittleLemonColor.green
+                        }
+                        else if( category == selectedCats) {
+                            LittleLemonColor.green
+                        }
+                        else{
+                            LittleLemonColor.cloud
+                        }
+                    ),
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier.padding(start = 11.dp)
+                )
+                {
+                    Text(
+                        text = category.replaceFirstChar{it.uppercase()},
+                        color =
+                        if (category == "all" && selectedCats ==""){
+                            LittleLemonColor.cloud
+                        }
+                        else if( category == selectedCats) {
+                            LittleLemonColor.cloud
+                        }
+                        else{
+                            LittleLemonColor.green
+                        },
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
-        
-        menuItem = databaseMenu
-        if(input!=""){
-            menuItem = databaseMenu.filter { it.title.lowercase().contains(input.lowercase()) }
+        menuItems = databaseMenu.filter { menuItem ->
+            (selectedCats.isEmpty() || menuItem.category == selectedCats)
+                    &&
+                    (menuItem.title.lowercase().contains(input.lowercase()))
         }
-        if(categ.isNotEmpty()){
-            if (categ.size == 1)  {menuItem = menuItem.filter { it.category== categ[0]}}
-            else if(categ.size == 2)  {menuItem = menuItem.filter { it.category== categ[0] || it.category== categ[1]}}
-            else if(categ.size == 3)    {menuItem = menuItem.filter { it.category== categ[0] || it.category== categ[1] ||  it.category== categ[2]}}
-            else {menuItem = menuItem.filter { it.category== categ[0] || it.category== categ[1] ||  it.category== categ[2] || it.category== categ[3] }}
-        }
-        else{
-        println(categ)}
+
+
         LazyColumn() {
-            items(menuItem) { item ->
+            items(menuItems) { item ->
                 dishDisplay(item = item)
             }
         }
@@ -165,23 +211,6 @@ fun HeroSection(){
         }
     }
 }
-
-@Composable
-fun filterButton(name:String){
-    var selected by remember {
-        mutableStateOf(false)
-    }
-    Button(
-        onClick = { if(!selected){categ.add(name.lowercase()); selected=!selected}else{categ.remove(name.lowercase()); selected=!selected}},
-        colors = ButtonDefaults.buttonColors(backgroundColor = if(!selected)   LittleLemonColor.cloud  else Color(0xFF495E57)),
-        shape = RoundedCornerShape(10.dp),
-        modifier = Modifier.padding(start = 16.dp)
-    )
-    {
-        Text(text = "$name", color = if(!selected)Color(0xFF495E57)else LittleLemonColor.cloud , fontWeight = FontWeight.Bold )
-    }
-}
-
 
 @Composable
 fun dishDisplay(item : MenuItem){

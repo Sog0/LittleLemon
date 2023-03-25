@@ -82,7 +82,7 @@ fun Onboarding(editor: SharedPreferences.Editor, navcon: NavHostController) {
                     .fillMaxWidth()
                     .padding(horizontal = 14.dp),
                 singleLine = true,
-                textStyle= TextStyle(fontSize =17.sp),
+                textStyle= TextStyle(fontSize =14.sp),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = LittleLemonColor.yellow,
                     cursorColor = LittleLemonColor.yellow
@@ -108,7 +108,7 @@ fun Onboarding(editor: SharedPreferences.Editor, navcon: NavHostController) {
                     .fillMaxWidth()
                     .padding(horizontal = 14.dp),
                 singleLine = true,
-                textStyle= TextStyle(fontSize =17.sp),
+                textStyle= TextStyle(fontSize =14.sp),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = LittleLemonColor.yellow,
                     cursorColor = LittleLemonColor.yellow
@@ -135,7 +135,7 @@ fun Onboarding(editor: SharedPreferences.Editor, navcon: NavHostController) {
                     .fillMaxWidth()
                     .padding(horizontal = 14.dp),
                 singleLine = true,
-                textStyle= TextStyle(fontSize =17.sp),
+                textStyle= TextStyle(fontSize =14.sp),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = LittleLemonColor.yellow,
                     cursorColor = LittleLemonColor.yellow
