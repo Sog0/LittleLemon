@@ -1,8 +1,6 @@
 package com.example.littlelemon
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import android.content.SharedPreferences
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -10,7 +8,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -25,13 +22,21 @@ import com.example.littlelemon.ui.theme.karla
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun DishDetails(navcon: NavHostController, id: Int, databaseMenu: List<MenuItem>){
+fun DishDetails(
+    navcon: NavHostController,
+    id: Int,
+    databaseMenu: List<MenuItem>,
+    sharedPref: SharedPreferences,
+    orderList: List<Orderd>,
+    orderViewModel: OrderViewModel
+){
     var counter by remember {
         mutableStateOf(0)
     }
 
 
     var dish = databaseMenu.firstOrNull{it.id == id}
+
 
 
     Column(Modifier.fillMaxSize()) {
@@ -124,10 +129,33 @@ fun DishDetails(navcon: NavHostController, id: Int, databaseMenu: List<MenuItem>
         }
 
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {
+                if(counter != 0){
+                var tempOrderBody : MutableMap<String, Int> =  mutableMapOf(Pair(dish.title,counter))
+
+                var uncomplete = orderList.firstOrNull(){it.checkReady == Ready.NOT_READY}
+
+                if(orderViewModel.isEmpty() || uncomplete == null){
+
+                    var ordering = Orderd(orderBody = tempOrderBody, customerEmail = sharedPref.getString("email",""))
+
+                    orderViewModel.add(ordering)
+                    }
+
+                else{
+
+                   uncomplete.orderBody!!.put(dish.title,counter + (if(uncomplete.orderBody.get(dish.title) == null) 0 else uncomplete.orderBody.get(dish.title)!!))
+
+                    orderViewModel.add(uncomplete)
+
+                }
+                }
+            },
             colors = ButtonDefaults.buttonColors(backgroundColor = LittleLemonColor.yellow),
             shape = RoundedCornerShape(40.dp),
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp , vertical = 30.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top=20.dp, start = 30.dp, end= 30.dp)
         ) {
             Text(
                 text = "Add for $${if(counter==0) dish.price else dish.price.toInt()*counter}",
@@ -135,14 +163,16 @@ fun DishDetails(navcon: NavHostController, id: Int, databaseMenu: List<MenuItem>
                 color = LittleLemonColor.charcoal,
                 fontSize = 18.sp,
                 fontFamily = karla,
-                modifier = Modifier.padding(vertical = 5.dp)
+                modifier = Modifier.padding(vertical = 0.dp)
             )
         }
 
+}}
 
 
-}
-}
+
+
+
 
 
 

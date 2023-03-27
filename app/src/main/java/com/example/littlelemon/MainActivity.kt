@@ -1,6 +1,7 @@
 package com.example.littlelemon
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,6 +13,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.*
@@ -19,14 +21,19 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import com.google.accompanist.navigation.animation.composable
 import androidx.navigation.navArgument
 import androidx.room.Room
+import com.example.littlelemon.ui.theme.LittleLemonColor
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import io.ktor.client.*
@@ -50,6 +57,7 @@ class MainActivity : ComponentActivity() {
     val database by lazy {
         Room.databaseBuilder(applicationContext,AppDatabase::class.java,"database").build()
     }
+
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,12 +67,20 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         setContent {
-            Column() {
+            var orderViewModel : OrderViewModel = viewModel(factory = MainViewModelFactory(
+                LocalContext.current.applicationContext as Application
+            ))
+
+            var orderList = orderViewModel.allOders.observeAsState(emptyList()).value
+            Column {
              var checkWhichScreen by remember {
                  mutableStateOf(0)
              }
+
             val databaseMenu by database.menuItemDao().getAll().observeAsState(emptyList())
+
             val navcon = rememberAnimatedNavController()
+
             if(checkWhichScreen == 0){Scaffold(topBar = { HomeHeader(navcon = navcon) }, modifier = Modifier
                 .fillMaxWidth()
                 .height(70.dp) ){}}
@@ -99,14 +115,28 @@ class MainActivity : ComponentActivity() {
                     enterTransition = { slideInVertically(initialOffsetY = {1500}, animationSpec =spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessMediumLow)) },
                     popExitTransition = { slideOutVertically(targetOffsetY = {2000}) },
                     exitTransition = { slideOutVertically(targetOffsetY = {2000}, animationSpec = tween(500)) },
-                    arguments = listOf(navArgument(Dish.dishId) { type = NavType.IntType },
-                        )
-                ) {
+                    arguments = listOf(navArgument(Dish.dishId) { type = NavType.IntType })
+                )
+                {
                     val id = requireNotNull(it.arguments?.getInt(Dish.dishId))
-                    DishDetails(navcon, id, databaseMenu)
+                    DishDetails(navcon, id, databaseMenu, sharedPref, orderList,orderViewModel)
                     checkWhichScreen = 0
-            }}
-        }}
+                }
+
+                composable(OrderList.r){
+                    OrderList(navcon = navcon,orderList,orderViewModel,databaseMenu)
+                }
+
+                composable(
+                    OrderDet.r + "/{${OrderDet.orderId}}",
+                    arguments = listOf(navArgument(OrderDet.orderId){ type = NavType.LongType})
+                    ) {
+                        val id = requireNotNull(it.arguments?.getLong(OrderDet.orderId))
+                        OrderDetails(navcon,id,orderViewModel,orderList)
+                    }
+                }
+            }
+        }
 
 
 
@@ -124,6 +154,8 @@ class MainActivity : ComponentActivity() {
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
 
         }
+
+
     suspend fun fetchMenu(): List<MenuItemNetwork>{
         return HttpClient.get ( "https://raw.githubusercontent.com/Meta-Mobile-Developer-PC/Working-With-Data-API/main/menu.json" ).body<MenuNetwork>().menu
     }
@@ -140,17 +172,20 @@ fun HomeHeader(navcon: NavHostController){
         .fillMaxWidth()
         .height(70.dp)
         .background(Color(0xFFFFFFFF)),
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.spacedBy(55.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        IconButton(onClick = { navcon.navigate(OrderList.r) }) {
+            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.baseline_shopping_basket_24), contentDescription = "cart" , tint = LittleLemonColor.green, modifier = Modifier.size(35.dp))
+        }
         Image(
             painter = painterResource(id = R.drawable.logo),
             contentDescription = "Logo",
             Modifier
                 .height(73.dp)
-                .padding(top = 10.dp, bottom = 10.dp, start = 100.dp)
+                .padding(top = 10.dp, bottom = 10.dp)
         )
-        IconButton(onClick = {navcon.navigate(Profile.r)} , Modifier.padding(top= 13.dp, bottom = 10.dp, start = 55.dp) ) {
+        IconButton(onClick = {navcon.navigate(Profile.r)} , Modifier.padding(top= 13.dp, bottom = 10.dp) ) {
 
             Image(painter = painterResource(id = R.drawable.profile) , contentDescription = "Default profile photo" , Modifier.size(40.dp) )
         }

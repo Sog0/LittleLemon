@@ -19,3 +19,12 @@ object Dish: Destination{
     override var r = "Dish"
     const val dishId = "dishId"
 }
+
+object OrderList: Destination{
+    override var r = "OrderList"
+}
+
+object OrderDet : Destination{
+    override var r = "OrderDet"
+    const val orderId = "orderId"
+}
