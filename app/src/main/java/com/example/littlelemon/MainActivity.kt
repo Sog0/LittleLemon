@@ -132,7 +132,7 @@ class MainActivity : ComponentActivity() {
                     arguments = listOf(navArgument(OrderDet.orderId){ type = NavType.LongType})
                     ) {
                         val id = requireNotNull(it.arguments?.getLong(OrderDet.orderId))
-                        OrderDetails(navcon,id,orderViewModel,orderList)
+                        OrderDetails(navcon,id,orderViewModel,orderList, MenuList = databaseMenu)
                     }
                 }
             }
