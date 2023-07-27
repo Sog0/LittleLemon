@@ -1,32 +1,23 @@
 package com.example.littlelemon
 
-import android.graphics.drawable.Icon
-import android.view.RoundedCorner
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.littlelemon.ui.theme.LittleLemonColor
-import java.security.Key
 
 @Composable
 fun OrderDetails(
@@ -48,11 +39,12 @@ fun OrderEditor(
     id: Long,
     MenuList: List<MenuItem>
 ){
-    val order = orderList.firstOrNull(){it.id == id}!!.orderBody
-    val menuList = fromMaptoOrderlist(order)
+    val order = orderList.firstOrNull(){it.id == id}!!
+    val orderBody = order.orderBody
+    val menuList = fromMaptoOrderlist(orderBody)
     LazyColumn(){
         items(menuList){pos ->
-            OrderEditorPlate(count = pos.count, menuItem = MenuList.firstOrNull{it.title == pos.title}!!)
+            OrderEditorPlate(count = pos.count, menuItem = MenuList.firstOrNull{it.title == pos.title}!!,orderViewModel,order )
         }
     }
 }
@@ -62,11 +54,16 @@ fun OrderEditor(
 @Composable
 fun OrderEditorPlate(
     count: Int,
-    menuItem: MenuItem
+    menuItem: MenuItem,
+    orderViewModel: OrderViewModel,
+    order: Orderd
 ){
     var temp_counter by remember {
         mutableStateOf(count)
-    } 
+    }
+    var openDialog by remember {
+        mutableStateOf(false)
+    }
     Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
         GlideImage(model = menuItem.image,
             contentDescription = menuItem.title,
@@ -82,7 +79,19 @@ fun OrderEditorPlate(
         ){
 
             //MINUS COUNTER BUTTON
-                IconButton(onClick = { /*TODO*/ },
+                IconButton(onClick = {
+                    if(temp_counter>1){
+                        temp_counter = remove_pos(
+                            order = order,
+                            orderViewModel = orderViewModel,
+                            count = temp_counter,
+                            title = menuItem.title
+                        )
+                    }
+                    else{
+                        openDialog = true
+                    }
+                                     },
                     Modifier
                         .clip(shape = RoundedCornerShape(100))
                         .background(color = LittleLemonColor.charcoal)
@@ -104,7 +113,14 @@ fun OrderEditorPlate(
                 )
 
                 //PLUS COUNTER BUTTON
-            IconButton(onClick = { /*TODO*/ },
+            IconButton(onClick = {
+                temp_counter = add_pos(
+                    order = order,
+                    orderViewModel = orderViewModel,
+                    count =temp_counter,
+                    title = menuItem.title
+                )
+                                 },
                 Modifier
                     .clip(shape = RoundedCornerShape(100))
                     .background(color = LittleLemonColor.charcoal)
@@ -121,9 +137,34 @@ fun OrderEditorPlate(
             }
         }
     }
+    //02:13 28.07.23 STOPPED HERE
+    if(openDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                openDialog = false
+            },
+            text = { Text(text = "Are you sure you want to delete this ${menuItem.title} from order?") },
+            confirmButton = {
+                Button(onClick = {
+                    order.orderBody.remove(menuItem.title)
+                    orderViewModel.add(order)
+                    openDialog = false
+                })
+                {
+                    Text(text = "Yes")
+                }
+            },
+            dismissButton = {
+                Button(onClick = {
+                    openDialog = false
+                })
+                {
+                    Text(text = "No")
+                }
+            }
+        )
+    }
 }
-
-
 
 
 data class OrderedDish(
@@ -141,12 +182,16 @@ fun fromMaptoOrderlist(data : MutableMap<String,Int>): List<OrderedDish>{
 }
 
 
-//17:55 27.07.23 STOPPED HERE
-fun remove_pos(orderViewModel: OrderViewModel, id: Long,title: String, count : Int): Int{
-
+fun remove_pos(orderViewModel: OrderViewModel, title: String, count : Int, order: Orderd): Int{
+    var count = count-1
+    order.orderBody[title] = count
+    orderViewModel.add(order)
     return count
 }
 
-fun add_pos(){
-
+fun add_pos(orderViewModel: OrderViewModel,title: String, count : Int, order: Orderd): Int{
+    var count = count+1
+    order.orderBody[title] = count
+    orderViewModel.add(order)
+    return count
 }
