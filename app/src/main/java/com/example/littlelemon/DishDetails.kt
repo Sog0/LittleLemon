@@ -150,6 +150,7 @@ fun DishDetails(
 
                 }
                 }
+                navcon.navigate(Home.r)
             },
             colors = ButtonDefaults.buttonColors(backgroundColor = LittleLemonColor.yellow),
             shape = RoundedCornerShape(40.dp),

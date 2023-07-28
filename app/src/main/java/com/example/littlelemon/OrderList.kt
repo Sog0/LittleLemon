@@ -76,121 +76,127 @@ fun Order(
     databaseMenu: List<MenuItem>,
     navcon: NavHostController
 ) {
-    var openDialog by remember{ mutableStateOf(false)}
-    Card(
-        shape = RoundedCornerShape(bottomEnd = 40.dp, bottomStart = 40.dp, topStart = 20.dp, topEnd = 20.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(190.dp)
-            .padding(top = 10.dp, start = 10.dp, end = 10.dp)
-            .clickable{ navcon.navigate(OrderDet.r + "/${order.id}") }
-    ) {
-        Column(Modifier.fillMaxWidth()) {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(
-                    text = "Order id number #${order.id}",
-                    fontSize = 18.sp,
-                    fontFamily = karla,
-                    color = LittleLemonColor.charcoal,
-                    fontWeight = FontWeight.W600,
-                    modifier = Modifier.padding(top = 14.dp)
-                )
-
-                IconButton(onClick = {openDialog= true}) {
-                    Icon(imageVector = Icons.Default.Close, contentDescription = "Delete")
-                }
-            }
-
-            val pxStart = with(LocalDensity.current) { 280.dp.toPx() }
-            val pxEnd = with(LocalDensity.current) { 250.dp.toPx() }
-
-            Row(Modifier.fillMaxWidth())
-            {
-                Column(Modifier.fillMaxWidth()) {
-
-                    var filterByOrder by remember {
-                        mutableStateOf(dishFilter(databaseMenu, order))
-                    }
-
-                    LazyRow(
-                        Modifier
-                            .width(280.dp)
-                            .graphicsLayer { alpha = 0.97F }
-                            .drawWithContent {
-                                val colors = listOf(Color.Transparent, Color.Black)
-                                drawContent()
-                                drawRect(
-                                    brush = Brush.horizontalGradient(
-                                        colors = colors,
-                                        startX = pxStart,
-                                        endX = pxEnd
-                                    ),
-                                    blendMode = BlendMode.DstIn
-                                )
-                            }
-                            .padding(start = 5.dp, top = 15.dp)
-                    ) {
-                        items(filterByOrder) {
-                            dishMenuature(it)
-                        }
-                    }
+        var openDialog by remember { mutableStateOf(false) }
+        Card(
+            shape = RoundedCornerShape(
+                bottomEnd = 40.dp,
+                bottomStart = 40.dp,
+                topStart = 20.dp,
+                topEnd = 20.dp
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(190.dp)
+                .padding(top = 10.dp, start = 10.dp, end = 10.dp)
+                .clickable { navcon.navigate(OrderDet.r + "/${order.id}") }
+        ) {
+            Column(Modifier.fillMaxWidth()) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
                     Text(
-                        text = "Total amount: $${countAmount(order.orderBody, filterByOrder)}",
-                        fontSize = 14.sp,
+                        text = "Order id number #${order.id}",
+                        fontSize = 18.sp,
                         fontFamily = karla,
                         color = LittleLemonColor.charcoal,
-                        fontWeight = FontWeight.W500,
-                        modifier = Modifier.padding(top = 10.dp, start = 30.dp)
+                        fontWeight = FontWeight.W600,
+                        modifier = Modifier.padding(top = 14.dp)
+                    )
+
+                    IconButton(onClick = { openDialog = true }) {
+                        Icon(imageVector = Icons.Default.Close, contentDescription = "Delete")
+                    }
+                }
+
+                val pxStart = with(LocalDensity.current) { 280.dp.toPx() }
+                val pxEnd = with(LocalDensity.current) { 250.dp.toPx() }
+
+                Row(Modifier.fillMaxWidth())
+                {
+                    Column(Modifier.fillMaxWidth()) {
+
+                        var filterByOrder by remember {
+                            mutableStateOf(dishFilter(databaseMenu, order))
+                        }
+
+                        LazyRow(
+                            Modifier
+                                .width(280.dp)
+                                .graphicsLayer { alpha = 0.97F }
+                                .drawWithContent {
+                                    val colors = listOf(Color.Transparent, Color.Black)
+                                    drawContent()
+                                    drawRect(
+                                        brush = Brush.horizontalGradient(
+                                            colors = colors,
+                                            startX = pxStart,
+                                            endX = pxEnd
+                                        ),
+                                        blendMode = BlendMode.DstIn
+                                    )
+                                }
+                                .padding(start = 5.dp, top = 15.dp)
+                        ) {
+                            items(filterByOrder) {
+                                dishMenuature(it)
+                            }
+                        }
+                        Text(
+                            text = "Total amount: $${countAmount(order.orderBody, filterByOrder)}",
+                            fontSize = 14.sp,
+                            fontFamily = karla,
+                            color = LittleLemonColor.charcoal,
+                            fontWeight = FontWeight.W500,
+                            modifier = Modifier.padding(top = 10.dp, start = 30.dp)
+                        )
+
+                    }
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.baseline_arrow_forward_ios_24),
+                        contentDescription = "arrow",
+                        modifier = Modifier
+                            .height(40.dp)
+                            .width(20.dp)
+                            .padding(end = 20.dp),
                     )
 
                 }
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.baseline_arrow_forward_ios_24),
-                    contentDescription = "arrow",
-                    modifier = Modifier
-                        .height(40.dp)
-                        .width(20.dp)
-                        .padding(end = 20.dp)
-                    ,
-                )
-
             }
+
         }
 
-    }
 
 
 
-
-    if (openDialog){
-        AlertDialog(
-            onDismissRequest = {
-                openDialog=false
-            },
-            text = { Text(text = "Are you sure you want to delete this order?") },
-            confirmButton = {
-                Button(onClick = {
-                    orderViewModel.remove(order)
-                    openDialog =false
-                })
-                {
-                    Text(text = "Yes")
+        if (openDialog) {
+            AlertDialog(
+                onDismissRequest = {
+                    openDialog = false
+                },
+                text = { Text(text = "Are you sure you want to delete this order?") },
+                confirmButton = {
+                    Button(onClick = {
+                        orderViewModel.remove(order)
+                        openDialog = false
+                    })
+                    {
+                        Text(text = "Yes")
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = {
+                        openDialog = false
+                    })
+                    {
+                        Text(text = "No")
+                    }
                 }
-            },
-            dismissButton = {
-                Button(onClick = {
-                openDialog =false
-            })
-            {
-                Text(text = "No")
-            }
-            }
-        )
+            )
+        }
     }
-}
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable

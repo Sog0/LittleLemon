@@ -64,34 +64,36 @@ fun OrderEditorPlate(
     var openDialog by remember {
         mutableStateOf(false)
     }
-    Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
-        GlideImage(model = menuItem.image,
-            contentDescription = menuItem.title,
-            modifier = Modifier
-                .clip(shape = RoundedCornerShape(20.dp))
-                .size(90.dp),
-            contentScale = ContentScale.Crop
-        )
-        Row(
-            Modifier.width(width = 200.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ){
+    if(temp_counter > 0) {
+        Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
+            GlideImage(
+                model = menuItem.image,
+                contentDescription = menuItem.title,
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(20.dp))
+                    .size(90.dp),
+                contentScale = ContentScale.Crop
+            )
+            Row(
+                Modifier.width(width = 200.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
 
-            //MINUS COUNTER BUTTON
-                IconButton(onClick = {
-                    if(temp_counter>1){
-                        temp_counter = remove_pos(
-                            order = order,
-                            orderViewModel = orderViewModel,
-                            count = temp_counter,
-                            title = menuItem.title
-                        )
-                    }
-                    else{
-                        openDialog = true
-                    }
-                                     },
+                //MINUS COUNTER BUTTON
+                IconButton(
+                    onClick = {
+                        if (temp_counter > 1) {
+                            temp_counter = remove_pos(
+                                order = order,
+                                orderViewModel = orderViewModel,
+                                count = temp_counter,
+                                title = menuItem.title
+                            )
+                        } else {
+                            openDialog = true
+                        }
+                    },
                     Modifier
                         .clip(shape = RoundedCornerShape(100))
                         .background(color = LittleLemonColor.charcoal)
@@ -106,63 +108,67 @@ fun OrderEditorPlate(
                 }
 
                 //COUNTER TEXT
-                Text(text = "$temp_counter" ,
+                Text(
+                    text = "$temp_counter",
                     color = LittleLemonColor.charcoal,
-                    modifier = Modifier.padding(top=5.dp),
+                    modifier = Modifier.padding(top = 5.dp),
                     fontSize = 25.sp
                 )
 
                 //PLUS COUNTER BUTTON
-            IconButton(onClick = {
-                temp_counter = add_pos(
-                    order = order,
-                    orderViewModel = orderViewModel,
-                    count =temp_counter,
-                    title = menuItem.title
-                )
-                                 },
-                Modifier
-                    .clip(shape = RoundedCornerShape(100))
-                    .background(color = LittleLemonColor.charcoal)
-                    .size(30.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_add),
-                    contentDescription = "remove",
-                    tint = LittleLemonColor.cloud,
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                )
+                IconButton(
+                    onClick = {
+                        temp_counter = add_pos(
+                            order = order,
+                            orderViewModel = orderViewModel,
+                            count = temp_counter,
+                            title = menuItem.title
+                        )
+                    },
+                    Modifier
+                        .clip(shape = RoundedCornerShape(100))
+                        .background(color = LittleLemonColor.charcoal)
+                        .size(30.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_add),
+                        contentDescription = "remove",
+                        tint = LittleLemonColor.cloud,
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                    )
 
+                }
             }
         }
-    }
-    //02:13 28.07.23 STOPPED HERE
-    if(openDialog) {
-        AlertDialog(
-            onDismissRequest = {
-                openDialog = false
-            },
-            text = { Text(text = "Are you sure you want to delete this ${menuItem.title} from order?") },
-            confirmButton = {
-                Button(onClick = {
-                    order.orderBody.remove(menuItem.title)
-                    orderViewModel.add(order)
+        //07:46 28.07.23 STOPPED HERE(added disappearing of order position)
+        if (openDialog) {
+            AlertDialog(
+                onDismissRequest = {
                     openDialog = false
-                })
-                {
-                    Text(text = "Yes")
+                },
+                text = { Text(text = "Are you sure you want to delete this ${menuItem.title} from order?") },
+                confirmButton = {
+                    Button(onClick = {
+                        order.orderBody.remove(menuItem.title)
+                        orderViewModel.add(order)
+                        openDialog = false
+                        temp_counter = 0
+                    })
+                    {
+                        Text(text = "Yes")
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = {
+                        openDialog = false
+                    })
+                    {
+                        Text(text = "No")
+                    }
                 }
-            },
-            dismissButton = {
-                Button(onClick = {
-                    openDialog = false
-                })
-                {
-                    Text(text = "No")
-                }
-            }
-        )
+            )
+        }
     }
 }
 
