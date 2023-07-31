@@ -31,6 +31,7 @@ import androidx.navigation.NavHostController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.littlelemon.ui.theme.LittleLemonColor
+import com.example.littlelemon.ui.theme.Typography
 import com.example.littlelemon.ui.theme.karla
 
 @Composable
@@ -42,12 +43,25 @@ fun OrderList(
 ){
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
-            LazyColumn() {
-                items(orderList) { order ->
-                    Order(order, orderViewModel,databaseMenu,navcon)
+            /*  03:26 31.07.23 STOPPED HERE ->
+                AT LEAST I ADDED TEXT THAT SHOWS THAT YOUR ORDER LIST IS EMPTY
+                NEXT UPDATE SHOULD BE IN OrderDetail.kt WITH GOOGLE MAP API
+            */
+            if(orderList.isEmpty()){
+                ForNoOrders()
+            }
+            else {
+                LazyColumn() {
+                    items(orderList) { order ->
+                        /*  03:26 31.07.23
+                        I TRIED VARIOUS APPROACHES TO MAKE ORDERS DELETE AFTER IT HAS NO POSITIONS
+                        BUT NO ONE OF THEM DIDN WORK
+                        */
+                            Order(order, orderViewModel, databaseMenu, navcon)
+                        }
+                    }
                 }
             }
-        }
 
         FloatingActionButton(
             onClick = { navcon.navigate(Home.r) },
@@ -229,7 +243,19 @@ fun dishMenuature(menuItem: MenuItem) {
 }
 
 
-
+@Composable
+fun ForNoOrders(){
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center)
+    {
+        Text(
+            text = "Here will appear your orders\r\nFor now your order list is empty",
+            fontStyle = Typography.h2.fontStyle,
+            color = Typography.h2.color,
+            fontSize = Typography.h2.fontSize,
+            textAlign = TextAlign.Center
+        )
+    }
+}
 
 
 

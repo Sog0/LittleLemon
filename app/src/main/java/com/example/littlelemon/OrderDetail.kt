@@ -141,7 +141,6 @@ fun OrderEditorPlate(
                 }
             }
         }
-        //07:46 28.07.23 STOPPED HERE(added disappearing of order position)
         if (openDialog) {
             AlertDialog(
                 onDismissRequest = {

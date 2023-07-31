@@ -51,11 +51,11 @@ abstract class AppDatabase: RoomDatabase(){
 @Entity
 data class Orderd(
     @PrimaryKey(autoGenerate = true) var id: Long =0L,
-    val status : Status = Status.NO,
+    var status : Status = Status.NO,
     val customerEmail: String?,
     val customerPhone : String = "",
     val totalAmount: Double = 0.00,
-    var orderBody: MutableMap<String,Int> ,
+    var orderBody: MutableMap<String,Int>,
     var paymentMethod: Payment = Payment.THINKING,
     val checkReady: Ready = Ready.NOT_READY,
 )
